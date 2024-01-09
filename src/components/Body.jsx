@@ -1,10 +1,8 @@
 import React from 'react'
-import Header from './Fragments/Header'
 
 const Body = () => {
     return (
         <>
-            <Header />
             <div className="main-banner">
                 <div className="owl-carousel owl-banner">
                     <div className="item item-1">

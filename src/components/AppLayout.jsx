@@ -11,6 +11,7 @@ const AppLayout = () => {
             <SubHeader />
             <Header />
             <Outlet />
+            <Footer />
 
 
         </>
