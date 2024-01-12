@@ -32,6 +32,10 @@ font & reset css
 reset
 --------------------------------------------- 
 */
+.pointer {
+  cursor: pointer;
+}
+
 html,
 body,
 div,
