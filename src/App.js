@@ -13,6 +13,8 @@ import appStore from './utils/appStore'
 import ProductList from './components/Admin/AdminComponents/ProductList'
 import { ProtectedRoute } from './utils/protectedRoute'
 import AddProducts from './components/Admin/AdminComponents/AddProducts'
+import AddCategories from './components/Admin/AdminComponents/Categories/AddCategories'
+import EditProduct from './components/Admin/AdminComponents/EditProduct'
 
 
 
@@ -71,12 +73,20 @@ const App = () => {
           element: <AddProducts />,
         },
         {
+          path: "addcategory",
+          element: <AddCategories />,
+        },
+        {
           path: "addproduct",
           element: <AddProducts />,
         },
         {
-          path: "categories",
+          path: "viewproducts",
           element: <ProductList />,
+        },
+        {
+          path: "editproduct/:id",
+          element: <EditProduct />,
         },
 
 

@@ -4,7 +4,7 @@ const Body = () => {
     return (
         <>
             <div className="main-banner">
-                <div className="owl-carousel owl-banner">
+                <div className="">
                     <div className="item item-1">
                         <div className="header-text">
                             <span className="category">

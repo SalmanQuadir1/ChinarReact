@@ -27,9 +27,9 @@ const Header = () => {
                                 <li><Link to="/contact">Contact Us</Link></li>
                                 <li><Link to="/login"><i className="fa fa-sign-in"></i> Log in</Link></li>
                             </ul>
-                            <a className='menu-trigger'>
+                            <p className='menu-trigger'>
                                 <span>Menu</span>
-                            </a>
+                            </p>
 
                         </nav>
                     </div>

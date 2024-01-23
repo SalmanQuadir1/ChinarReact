@@ -1,18 +1,40 @@
 import React, { useEffect, useState } from 'react'
-import { ADD_PRODUCT, BASE_URL, GET_ALL_CATEGORIES } from '../../../utils/constants';
+import { ADD_PRODUCT, BASE_URL, GET_ALL_CATEGORIES, GET_PRODUCT, UPDATE_PRODUCT, VIEW_PRODUCT_IMAGE } from '../../../utils/constants';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-const AddProducts = () => {
-    const [inputs, setInputs] = useState({});
+const EditProduct = () => {
+    const { id } = useParams();
+    console.log("product...", id);
+    const [inputs, setInputs] = useState("");
     const [categories, setCategories] = useState([]);
     const [image, setImage] = useState('');
-
+    useEffect(() => {
+        getProductById();
+    }, [])
 
 
     useEffect(() => {
         getCategoryList();
 
     }, []);
+
+    const getProductById = () => {
+        axios.get(
+            BASE_URL + GET_PRODUCT + id,
+        )
+            .then(function (response) {
+                console.log(response?.data);
+                setInputs(response?.data);
+
+
+            })
+            .catch(function (error) {
+                console.log(error.response);
+                alert(error.response);
+            });
+
+    }
 
     const getCategoryList = async () => {
         try {
@@ -31,23 +53,21 @@ const AddProducts = () => {
 
     }
 
-    const saveProduct = async () => {
-        console.log({ product: inputs, imageName: image })
-        axios.post(
-            BASE_URL + ADD_PRODUCT, { product: JSON.stringify(inputs), imageName: image }, {
+    const saveProduct = async (id) => {
+        console.log(inputs)
+        axios.put(
+            BASE_URL + UPDATE_PRODUCT, { product: JSON.stringify(inputs), image: image }, {
 
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         }
-
-
         )
             .then(function (response) {
                 console.log(response.data);
                 setInputs({});
                 setImage('');
-                alert("Product saved successfully !!")
+                alert("Product Updated successfully !!")
 
             })
             .catch(function (error) {
@@ -70,15 +90,16 @@ const AddProducts = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("product to be updated....", inputs, image)
 
-        saveProduct();
+        saveProduct(inputs?.id);
 
     };
     return (
         <>
 
             <div className='form p-4 m-3 card border-0 shadow-lg'>
-                <div className='page-title p-3 border-0 card shadow-sm text-center mb-3 '><h6>Add Products</h6></div>
+                <div className='page-title p-3 border-0 card shadow-sm text-center mb-3 '><h6>Update Product</h6></div>
                 <form onSubmit={handleSubmit} >
                     <div className='row'>
                         <div className='col-md-6'>
@@ -91,8 +112,8 @@ const AddProducts = () => {
                         <div className='col-md-6'>
                             <div className="mb-3">
                                 <label htmlFor="typeId" className="form-label">Type</label>
-                                <select className="form-control" name='typeId' value={inputs.typeId || ""} onChange={handleChange} type="text" id="typeId" required>
-                                    <option value="">Choose One...</option>
+                                <select className="form-control" name='typeId' onChange={handleChange} type="text" id="typeId" required>
+                                    <option value={inputs?.typeId?.id}>{inputs?.type?.name}</option>
 
                                     {categories && categories.map(category => (
                                         <option key={category?.id} value={category?.id}>{category?.name}</option>
@@ -183,10 +204,15 @@ const AddProducts = () => {
                                 />
                             </div>
                         </div>
+                        <div className='col-md-6 '>
+
+                            <img className='rounded-lg w-50 mt-3' height={100} width="100px" alt='pro_img' src={`${BASE_URL + VIEW_PRODUCT_IMAGE}${inputs?.imageName}`} />
+
+                        </div>
 
                     </div>
                     <div className='containter text-center'>
-                        <button className=' border-0 btn_orange my-4 px-2 py-2 '>Submit</button>
+                        <button className=' border-0 btn_orange my-4 px-2 py-2 '>Update</button>
                     </div>
 
                 </form>
@@ -196,4 +222,5 @@ const AddProducts = () => {
     )
 }
 
-export default AddProducts
+
+export default EditProduct

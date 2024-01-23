@@ -5,16 +5,16 @@ import { Link } from 'react-router-dom'
 const Sidebar = () => {
     return (
         <div className="sidebar">
-            <Link to="/admin" className="active" >Dashboard</Link>
-            <Link to="/admin/addProduct">Products
-                <ul className='d-none'>
-                    <li><Link to="/admin/addProduct">Add Product</Link></li>
-                    <li><Link to="/admin/addProduct">View Products</Link></li>
-                </ul>
-            </Link>
+            <div className='text-center'>
+                <img src="./assets/images/Logo.png" className='mx-5 w-50' alt="Logo_image" />
+                <h4 className="text-white sidebar_logo mx-auto my-3">Chinar</h4>
+            </div>
 
-            <Link to="#about">Categories</Link>
-            <Link to="#contact">Blogs</Link>
+            <Link to="/admin" className="active" >Dashboard</Link>
+            <Link to="/admin/addProduct" >Add Product</Link>
+            <Link to="/admin/viewproducts">View Products </Link>
+            <Link to="/admin/addcategory">Categories</Link>
+            <Link to="/admin/viewproducts">Blogs</Link>
         </div>
     )
 }
