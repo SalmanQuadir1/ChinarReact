@@ -1,46 +1,69 @@
 import React, { useEffect, useState } from 'react'
-import { BASE_URL, DELETE_PRODUCT, GET_ALL_PRODUCTS, VIEW_PRODUCT_IMAGE } from '../../../utils/constants';
+import { BASE_URL, DELETE_PRODUCT, GET_ALL_PRODUCTS, VIEW_PRODUCT_IMAGE, toastOptions } from '../../../utils/constants';
 import { useNavigate } from 'react-router-dom';
 import Shimmer from '../../Shimmer';
 import EmptyList from '../../EmptyList';
+import { toast } from 'react-toastify';
 
 const ProductList = () => {
     const [productList, setProductList] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
     const navigate = useNavigate();
 
 
     useEffect(() => {
         getProductList();
-    }, []);
+    }, [currentPage]);
+
     const getProductList = async () => {
         try {
-            const response = await fetch(BASE_URL + GET_ALL_PRODUCTS);
+            const response = await fetch(`${BASE_URL + GET_ALL_PRODUCTS}?page=${currentPage}`);
+
+            if (response.status === 204) {
+                setProductList([]);
+                setTotalPages(1);
+                setLoading(false);
+                return;
+            }
+
             const result = await response.json();
-            console.log("Success:", result.content);
+            console.log(result?.content);
             setProductList(result?.content);
+            setTotalPages(result?.totalPages);
             setLoading(false);
+
         } catch (error) {
             console.error("Error:", error);
         }
     };
+
+
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
     const handleUpdate = (id) => {
         if (id) {
-
             navigate(`/admin/editproduct/${id}`)
         }
 
     }
+
     const handleDelete = async (id) => {
         try {
             const response = await fetch(BASE_URL + DELETE_PRODUCT + id, {
                 method: "DELETE",
             });
-            const result = await response.json();
-            console.log("Success:", result);
 
-            setProductList(prev => prev.filter(product => product.id !== id));
-
+            if (response.status === 204) {
+                toast.success("Success: Product deleted successfully", toastOptions);
+                getProductList();
+            } else {
+                toast.error("Error: Something went wrong!", toastOptions, response.status, response.statusText);
+            }
         } catch (error) {
             console.error("Error:", error);
         }
@@ -80,6 +103,17 @@ const ProductList = () => {
 
                 </tbody>
             </table>
+            <nav>
+                <ul className="pagination">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <li key={page} className={`page-item ${page === currentPage + 1 ? 'active' : ''}`}>
+                            <button className="page-link" onClick={() => handlePageChange(page - 1)}>
+                                {page}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
 
 
         </div>

@@ -15,6 +15,9 @@ import { ProtectedRoute } from './utils/protectedRoute'
 import AddProducts from './components/Admin/AdminComponents/AddProducts'
 import AddCategories from './components/Admin/AdminComponents/Categories/AddCategories'
 import EditProduct from './components/Admin/AdminComponents/EditProduct'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 
@@ -102,6 +105,7 @@ const App = () => {
     <div>
       <Provider store={appStore}>
         <RouterProvider router={appRouter}> </RouterProvider>
+        <ToastContainer />
       </Provider>
 
 

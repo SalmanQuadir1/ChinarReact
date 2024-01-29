@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { BASE_URL, DELETE_CATEGORY, GET_ALL_CATEGORIES, POST_CATEGORY, PUT_CATEGORY } from '../../../../utils/constants';
+import { BASE_URL, DELETE_CATEGORY, GET_ALL_CATEGORIES, POST_CATEGORY, PUT_CATEGORY, toastOptions } from '../../../../utils/constants';
+import { toast } from 'react-toastify';
 
 const AddCategories = () => {
     const [inputs, setInputs] = useState({});
     const [categories, setCategories] = useState([]);
     const [editForm, setEditForm] = useState(false);
     const [editCategoryId, setEditCategoryId] = useState(null);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         getAllCategories();
-    }, [editCategoryId]);
+    }, [editCategoryId, currentPage]);
 
     const handleChange = (event) => {
         const name = event.target.name;
@@ -19,15 +22,24 @@ const AddCategories = () => {
 
     const getAllCategories = async () => {
         try {
-            const response = await fetch(BASE_URL + GET_ALL_CATEGORIES);
+            const response = await fetch(`${BASE_URL + GET_ALL_CATEGORIES}?page=${currentPage}`);
+            if (response.status === 204) {
+                setCategories([]);
+                setTotalPages(1);
+                return;
+            }
+
             const result = await response.json();
+            console.log(result?.content);
             setCategories(result?.content);
-            //console.log("Success:", result);
+            setTotalPages(result?.totalPages);
         } catch (error) {
             console.error("Error:", error);
         }
     };
-
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
     const postCategory = async (data) => {
         try {
             const url = editForm ? BASE_URL + PUT_CATEGORY + `${editCategoryId}` : BASE_URL + POST_CATEGORY;
@@ -40,33 +52,34 @@ const AddCategories = () => {
                 },
                 body: JSON.stringify(data),
             });
+            if (response.status === 201 && method === 'POST') {
+                toast.success("Category created successfully !!", toastOptions);
+                console.log("resp.....", response);
+            } else if (response.status === 200 && method === 'PUT') {
+                toast.success("Category updated  successfully !!", toastOptions);
+            }
+            else if (response.status === 400 && method === 'POST') {
+                toast.error("Category already exists !!", toastOptions);
 
-            const result = await response.json();
-            if (editForm) {
-                // Update the existing category in the state
-                setCategories(categories.map(category => (category.id === editCategoryId ? result.content : category)));
-            } else {
-                // Add the new category to the state
-                setCategories([...categories, result.content]);
             }
 
-            // Reset the form and edit state
+            getAllCategories();
             setEditForm(false);
             setEditCategoryId(null);
             setInputs({});
 
-            return result.content;
+            return response.content;
 
         } catch (error) {
-            console.error("Error:", error);
+            toast.error("Error:", error);
+            console.log(error + "surcharge")
             return categories;
         }
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        await postCategory(inputs);
-        console.log('The form was submitted:', inputs);
+        postCategory(inputs);
     };
 
     const handleDelete = async (id) => {
@@ -74,10 +87,12 @@ const AddCategories = () => {
             const response = await fetch(BASE_URL + DELETE_CATEGORY + id, {
                 method: "DELETE",
             });
-            const result = await response.json();
-            console.log("Success:", result);
-
-            setCategories(prevCategories => prevCategories.filter(category => category.id !== id));
+            if (response.status === 204) {
+                toast.success("Success: Category deleted successfully", toastOptions);
+                getAllCategories();
+            } else {
+                toast.error("Error:", response.status, response.statusText);
+            }
 
         } catch (error) {
             console.error("Error:", error);
@@ -143,6 +158,17 @@ const AddCategories = () => {
 
                     </tbody>
                 </table>
+                <nav>
+                    <ul className="pagination">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <li key={page} className={`page-item ${page === currentPage + 1 ? 'active' : ''}`}>
+                                <button className="page-link" onClick={() => handlePageChange(page - 1)}>
+                                    {page}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
 
 
             </div>

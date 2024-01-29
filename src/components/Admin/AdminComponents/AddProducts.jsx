@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { ADD_PRODUCT, BASE_URL, GET_ALL_CATEGORIES } from '../../../utils/constants';
+import { ADD_PRODUCT, BASE_URL, GET_ALL_CATEGORIES, toastOptions } from '../../../utils/constants';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Bounce, toast } from 'react-toastify';
 
 const AddProducts = () => {
     const [inputs, setInputs] = useState({});
     const [categories, setCategories] = useState([]);
     const [image, setImage] = useState('');
+    const navigate = useNavigate();
+
 
 
 
@@ -47,10 +51,14 @@ const AddProducts = () => {
                 console.log(response.data);
                 setInputs({});
                 setImage('');
-                alert("Product saved successfully !!")
+                toast.success('Product saved successfully !!', toastOptions);
+                if (response.data) {
+                    navigate("/admin/viewproducts");
+                }
 
             })
             .catch(function (error) {
+                toast.error("Something went wrong !!", error.response)
                 console.log(error.response);
                 alert(error.response);
             });

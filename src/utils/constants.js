@@ -1,3 +1,5 @@
+import { Bounce } from "react-toastify";
+
 export const BASE_URL = "http://localhost:8055";
 
 //Categories
@@ -15,7 +17,19 @@ export const DELETE_PRODUCT = "/api/product/delete/";
 export const GET_PRODUCT = "/api/product/getProduct/";
 
 
+//toaster config
 
+export const toastOptions = {
+    position: "top-right",
+    autoClose: 1000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Bounce,
+};
 
 
 
